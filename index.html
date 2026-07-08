@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Steady Hands Operation</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      html::-webkit-scrollbar {
+        display: none;
+      }
+
+      body {
+        background: #111;
+        font-family: Arial, Helvetica, sans-serif;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .background-section {
+        position: relative;
+        width: 100%;
+        min-height: min(50vw, 887px);
+        background: #111;
+        overflow: hidden;
+        z-index: 0;
+        box-shadow: 0 24px 55px rgba(0, 0, 0, 0.75);
+        border-bottom: 1px solid rgba(201, 159, 73, 0.28);
+      }
+
+      .background-image {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: min(100vw, 1774px);
+        aspect-ratio: 1774 / 887;
+        transform: translateX(-50%);
+        background-image: url("./images/pagebackground.png");
+        background-size: contain;
+        background-position: center top;
+        background-repeat: no-repeat;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .background-section::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 140px;
+        background: linear-gradient(
+          to bottom,
+          rgba(17, 17, 17, 0),
+          rgba(17, 17, 17, 0.92),
+          #111
+        );
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .hdrbox {
+        width: 100%;
+        background: #050505;
+        border-bottom: 1px solid rgba(201, 159, 73, 0.28);
+        position: sticky;
+        top: 0;
+        z-index: 999;
+      }
+
+      .hdrinner {
+        width: min(100%, 1280px);
+        margin: 0 auto;
+        min-height: 78px;
+        padding: 10px 28px;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 28px;
+      }
+
+      .hdrlogo {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-width: 330px;
+        text-decoration: none;
+      }
+
+      .hdrlogo img {
+        width: 70px;
+        height: auto;
+        display: block;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+
+      .hdrbrand {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .hdrbrand-main {
+        color: #f5f1e8;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 30px;
+        font-weight: 500;
+        letter-spacing: 3.5px;
+        text-transform: uppercase;
+      }
+
+      .hdrbrand-sub {
+        margin-top: 9px;
+        color: #c99f49;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 8px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .hdrbrand-sub span {
+        display: block;
+        width: 46px;
+        height: 2px;
+        background: #c99f49;
+      }
+
+      .hdrnav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+      }
+
+      .hdrtxt {
+        color: #f5f1e8;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 1.1px;
+        line-height: 1;
+        transition: color 0.25s ease;
+        white-space: nowrap;
+        position: relative;
+      }
+
+      .hdrtxt::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -7px;
+        width: 0;
+        height: 1px;
+        background: #c99f49;
+        transition: width 0.25s ease;
+      }
+
+      .hdrtxt:hover,
+      .hdrselectedtxt {
+        color: #c99f49;
+      }
+
+      .hdrtxt:hover::after {
+        width: 100%;
+      }
+
+      .hdrcta {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #c99f49;
+        color: #f5f1e8;
+        background: rgba(201, 159, 73, 0.08);
+        text-decoration: none;
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        padding: 14px 24px;
+        line-height: 1;
+        border-radius: 999px;
+        box-shadow: 0 0 0 rgba(201, 159, 73, 0);
+        transition:
+          background 0.25s ease,
+          color 0.25s ease,
+          transform 0.25s ease,
+          box-shadow 0.25s ease,
+          border-color 0.25s ease;
+        white-space: nowrap;
+      }
+
+      .hdrcta::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -120%;
+        width: 80%;
+        height: 100%;
+        background: linear-gradient(
+          120deg,
+          transparent,
+          rgba(255, 255, 255, 0.28),
+          transparent
+        );
+        transition: left 0.5s ease;
+      }
+
+      .hdrcta:hover {
+        background: #c99f49;
+        color: #050505;
+        border-color: #d9b766;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 26px rgba(201, 159, 73, 0.24);
+      }
+
+      .hdrcta:hover::before {
+        left: 120%;
+      }
+
+      .mobile-cta {
+        display: none;
+      }
+
+      .mobile-menu {
+        display: none;
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .mobile-menu span {
+        display: block;
+        width: 26px;
+        height: 2px;
+        background: #c99f49;
+        border-radius: 999px;
+        transition:
+          transform 0.25s ease,
+          opacity 0.25s ease;
+      }
+
+      .mobile-menu:focus-visible {
+        outline: 2px solid #c99f49;
+        outline-offset: 4px;
+      }
+
+      .mobile-menu.open span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+
+      .mobile-menu.open span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .mobile-menu.open span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+      }
+
+      .page-content {
+        position: relative;
+        z-index: 2;
+        min-height: 100vh;
+        padding: 80px 28px;
+        background: #111;
+        color: #f5f1e8;
+      }
+
+      .content-inner {
+        width: min(100%, 1280px);
+        margin: 0 auto;
+      }
+
+      .content-inner h1 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(32px, 5vw, 64px);
+        font-weight: 500;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+      }
+
+      .content-inner p {
+        max-width: 760px;
+        color: rgba(245, 241, 232, 0.78);
+        font-size: 18px;
+        line-height: 1.7;
+      }
+
+      @media (max-width: 1050px) {
+        .hdrbrand-main {
+          font-size: 24px;
+          letter-spacing: 2.8px;
+        }
+
+        .hdrbrand-sub {
+          font-size: 11px;
+          letter-spacing: 6px;
+        }
+
+        .hdrbrand-sub span {
+          width: 34px;
+        }
+
+        .hdrlogo {
+          min-width: 275px;
+        }
+
+        .hdrnav {
+          gap: 18px;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .background-section {
+          min-height: 70vh;
+        }
+
+        .background-image {
+          left: 0;
+          width: 100%;
+          height: 100%;
+          aspect-ratio: auto;
+          transform: none;
+          background-size: auto 100%;
+          background-position: right top;
+        }
+
+        .hdrinner {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 0;
+          padding: 10px 24px;
+          position: relative;
+          min-height: 72px;
+        }
+
+        .hdrlogo {
+          min-width: 0;
+          gap: 0;
+        }
+
+        .hdrlogo img {
+          width: 56px;
+        }
+
+        .hdrbrand {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          align-items: center;
+          text-align: center;
+          max-width: calc(100% - 150px);
+          pointer-events: none;
+        }
+
+        .hdrbrand-main {
+          font-size: clamp(15.5px, 6vw, 24px);
+          letter-spacing: clamp(0.9px, 0.6vw, 2.2px);
+        }
+
+        .hdrbrand-sub {
+          margin-top: 8px;
+          font-size: clamp(7.5px, 2.7vw, 10.5px);
+          letter-spacing: clamp(2px, 1vw, 4.6px);
+          gap: clamp(3px, 1.5vw, 7px);
+        }
+
+        .hdrbrand-sub span {
+          width: clamp(14px, 6vw, 28px);
+        }
+
+        .mobile-menu {
+          display: flex;
+          position: relative;
+          z-index: 1001;
+        }
+
+        .desktop-cta {
+          display: none;
+        }
+
+        .hdrnav {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          width: 100%;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 20px;
+          padding: 24px 0 22px;
+          background: #050505;
+          border-top: 1px solid rgba(201, 159, 73, 0.2);
+          border-bottom: 1px solid rgba(201, 159, 73, 0.28);
+          z-index: 1000;
+        }
+
+        .hdrnav.show {
+          display: flex;
+        }
+
+        .mobile-cta {
+          display: inline-block;
+          margin-top: 4px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hdrinner {
+          padding: 10px 16px;
+        }
+
+        .hdrlogo img {
+          width: 52px;
+        }
+
+        .hdrbrand {
+          max-width: calc(100% - 128px);
+        }
+
+        .page-content {
+          padding: 60px 20px;
+        }
+      }
+
+      @media (max-width: 380px) {
+        .hdrinner {
+          padding: 10px 12px;
+        }
+
+        .hdrlogo img {
+          width: 46px;
+        }
+
+        .hdrbrand {
+          max-width: calc(100% - 112px);
+        }
+      }
+
+      @media (max-width: 330px) {
+        .hdrlogo img {
+          width: 42px;
+        }
+
+        .hdrbrand {
+          max-width: calc(100% - 102px);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="hdrbox">
+      <div class="hdrinner">
+        <a href="#" class="hdrlogo">
+          <img src="./images/logo.png" alt="Steady Hands Operation" />
+
+          <span class="hdrbrand">
+            <span class="hdrbrand-main">Steady Hands</span>
+            <span class="hdrbrand-sub">
+              <span></span>
+              Operation
+              <span></span>
+            </span>
+          </span>
+        </a>
+
+        <button
+          class="mobile-menu"
+          onclick="toggleMenu()"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="hdrnav" id="navMenu">
+          <a href="#" class="hdrtxt hdrselectedtxt">Home</a>
+          <a href="#" class="hdrtxt">Services</a>
+          <a href="#" class="hdrtxt">Packages</a>
+          <a href="#" class="hdrtxt">About</a>
+          <a href="#" class="hdrtxt">Contact</a>
+          <a href="#" class="hdrcta mobile-cta">Get Started</a>
+        </nav>
+
+        <a href="#" class="hdrcta desktop-cta">Get Started</a>
+      </div>
+    </header>
+
+    <section class="background-section">
+      <div class="background-image"></div>
+    </section>
+
+    <main class="page-content">
+      <div class="content-inner">
+        <h1>Welcome</h1>
+        <p>
+          Add your page content here. You can now scroll past the full
+          background image without the image being cropped or stuck off screen.
+        </p>
+      </div>
+    </main>
+
+    <script>
+      function toggleMenu() {
+        const nav = document.getElementById("navMenu");
+        const button = document.querySelector(".mobile-menu");
+
+        const isOpen = nav.classList.toggle("show");
+
+        button.classList.toggle("open", isOpen);
+        button.setAttribute("aria-expanded", String(isOpen));
+      }
+
+      function closeMenu() {
+        const nav = document.getElementById("navMenu");
+        const button = document.querySelector(".mobile-menu");
+
+        nav.classList.remove("show");
+        button.classList.remove("open");
+        button.setAttribute("aria-expanded", "false");
+      }
+
+      window.addEventListener("resize", closeMenu);
+
+      const navLinks = document.querySelectorAll(".hdrnav .hdrtxt");
+
+      navLinks.forEach((link) => {
+        link.addEventListener("click", function () {
+          navLinks.forEach((item) => {
+            item.classList.remove("hdrselectedtxt");
+          });
+
+          this.classList.add("hdrselectedtxt");
+
+          closeMenu();
+        });
+      });
+    </script>
+  </body>
+</html>
